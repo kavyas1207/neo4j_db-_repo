@@ -1,0 +1,118 @@
+--Buyer Nodes
+CREATE (Kavya:buyer{name: "Kavya", contactno:9789470466, email: "che@gmail.com",address:"chennai",gender:"female"})
+CREATE (Feroz:buyer{name: "Feroz", contactno:7010609382, email: "fero@gmail.com",address:"chennai",gender:"male"})
+CREATE (Divya:buyer{name: "Divya", contactno:9789900998, email: "dd@gmail.com",address:"chennai",gender:"female"})
+CREATE (Nivetha:buyer{name: "Nivetha", contactno:9629862285, email: "nivi@gmail.com",address:"chennai",gender:"female"})
+CREATE (Harry:buyer{name: "Harry", contactno:9232425262, email: "hp@gmail.com",address:"salem",gender:"male"})
+
+--Product Nodes
+CREATE (Wildcraft_TB:product{P_id:1,P_name:"Wildcraft_TB",P_rate:1000,Description:"Wildcraft Travel Bag",P_stock:"YES"})
+CREATE (Milton_F:product{P_id:2,P_name:"Milton_F",P_rate:600,Description:"Milton Flask 500ML",P_stock:"YES"})
+CREATE (Parker_FP:product{P_id:3,P_name:"Parker_FP",P_rate:250,Description:"Parker Fountain Pen",P_stock:"YES"})
+CREATE (Zouk_HB:product{P_id:4,P_name:"Zouk_HB",P_rate:2000,Description:"Zouk Handbag design printed brown",P_stock:"YES"})
+CREATE (Tupperware_B:product{P_id:5,P_name:"Tupperware_B",P_rate:1000,Description:"Tupperware Blue glittered flask",P_stock:"YES"})
+CREATE (AmericanTourister_BP:product{P_id:6,P_name:"AmericanTourister_BP",P_rate:1300,Description:"American Tourister casual backpack",P_stock:"YES"})
+
+
+--Relationship creation
+MATCH
+  (Kavya:buyer{name: 'Kavya'}),
+  (Wildcraft_TB:product{P_name:"Wildcraft_TB",P_rate:1000,Description:"Wildcraft Travel Bag"})
+MERGE (Kavya)-[r:PURCHASED]->(Wildcraft_TB)
+RETURN Kavya, type(r), Wildcraft_TB
+
+MATCH
+  (Divya:buyer{name: 'Divya'}),
+  (Zouk_HB:product{P_name:"Zouk_HB",P_rate:2000,Description:"Zouk Handbag design printed brown"})
+MERGE (Divya)-[r:PURCHASED]->(Zouk_HB)
+RETURN Divya, type(r), Zouk_HB
+
+MATCH
+  (Harry:buyer{name:'Harry'}),
+ (AmericanTourister_BP:product{P_name:"AmericanTourister_BP",P_rate:1300,Description:"American Tourister casual backpack"})
+MERGE (Harry)-[r:PURCHASED]->(AmericanTourister_BP)
+
+MATCH
+  (Harry:buyer{name: 'Harry'}),
+  (Milton_F:product{P_name:"Milton_F",P_rate:600,Description: "Milton Flask 500ML"})
+MERGE(Harry)-[r:PURCHASED]->(Milton_F)
+
+--Multiple Relationship creation
+MATCH
+  (Divya:buyer{name: 'Divya'}),
+  (Tupperware_B:product{P_name:"Tupperware_B",P_rate:1000,Description:"Tupperware Blue glittered flask"}),
+   (Parker_FP:product{P_name:"Parker_FP",P_rate:250,Description:"Parker Fountain Pen"})
+MERGE (Divya)-[:PURCHASED]->(Tupperware_B)
+MERGE (Divya)-[:PURCHASED]->(Parker_FP)
+
+MATCH
+  (Nivetha:buyer{name: 'Nivetha'}),
+  (Tupperware_B:product{P_name:"Tupperware_B",P_rate:1000,Description:"Tupperware Blue glittered flask"}),
+  (Parker_FP:product{P_name:"Parker_FP",P_rate:250,Description:"Parker Fountain Pen"})
+MERGE (Nivetha)-[:PURCHASED]->(Tupperware_B)
+MERGE (Nivetha)-[:PURCHASED]->(Parker_FP)
+
+
+MATCH
+  (Feroz:buyer{name: 'Feroz'}),
+  (AmericanTourister_BP:product{P_name:"AmericanTourister_BP",P_rate:1300,Description:"American Tourister casual backpack"}),
+ (Tupperware_B:product{P_name:"Tupperware_B",P_rate:1000,Description:"Tupperware Blue glittered flask"})
+MERGE (Feroz)-[:PURCHASED]->(Tupperware_B)
+MERGE (Feroz)-[:PURCHASED]->(AmericanTourister_BP)
+
+MATCH
+  (Kavya:buyer{name: 'Kavya'}),
+  (Zouk_HB:product{P_name:"Zouk_HB",P_rate:2000,Description:"Zouk Handbag design printed brown"}),
+   (Tupperware_B:product{P_name:"Tupperware_B",P_rate:1000,Description: "Tupperware Blue glittered flask"})
+MERGE (Kavya)-[:PURCHASED]->(Tupperware_B)
+MERGE (Kavya)-[:PURCHASED]->(Zouk_HB)
+
+-- deleting node
+
+MATCH(Kavya:buyer {name: "Kavya", contactno:9789470466, email: "che@gmail.com",address:"chennai",gender:"female"}) DETACH DELETE Kavya
+
+--Multiple nodes creation
+
+CREATE (Kavya:buyer{name: "Kavya", contactno:9789470466, email: "che@gmail.com",address:"chennai",gender:"female"},
+Feroz:buyer{name: "Feroz", contactno:7010609382, email: "fero@gmail.com",address:"chennai",gender:"male"}),
+(Divya:buyer{name: "Divya", contactno:9789900998, email: "dd@gmail.com",address:"chennai",gender:"female"}),
+(Nivetha:buyer{name: "Nivetha", contactno:9629862285, email: "nivi@gmail.com",address:"chennai",gender:"female"}),
+(Harry:buyer{name: "Harry", contactno:9232425262, email: "hp@gmail.com",address:"salem",gender:"male"})
+ 
+--UPDATE THE NODE VALUES
+
+MATCH (P:product) WHERE P.P_id=2 SET P.P_stock="NO" RETURN P.P_id,P.P_name,P.P_rate,P.P_stock
+
+--ORDER BY (sorting)
+
+MATCH (B:buyer)
+RETURN B.name,B.contactno,B.email,B.address,B.gender
+ORDER BY B.name DESC
+
+MATCH (P:product) 
+RETURN P.P_id,P.P_name,P.P_rate,P.P_stock 
+ORDER BY P.P_id 
+
+--SEARCHING
+
+MATCH (P:product) WHERE  P.P_stock<>"YES" RETURN P.P_id,P.P_name,P.P_rate,P.P_stock
+
+MATCH (P:product) WHERE P.P_stock="NO" RETURN P 
+
+--PAGINATION
+
+MATCH (B:buyer)-[:PURCHASED]->(P:product) 
+RETURN B.name 
+LIMIT 3 
+
+MATCH(B:buyer) RETURN B.name ORDER BY B.name SKIP 2 
+
+--Fetching data by condition
+
+MATCH (B:buyer)-[:PURCHASED]->(P:product)  
+WHERE B.name="Kavya" 
+RETURN B.name as BUYER_NAME, P.P_name AS PRODUCT ,P.P_rate AS A
+
+MATCH (B:buyer)-[:PURCHASED]->(P:product)  
+WHERE B.name="Kavya" 
+RETURN B.name AS BUYER_NAME,SUM(P.P_rate) AS TOTAL_BILL_AMOUNT 
